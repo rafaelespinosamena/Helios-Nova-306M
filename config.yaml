@@ -1,0 +1,80 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  Helios Nova  ·  Configuration                                             ║
+# ║  306M dense LM  •  FineWeb-Edu 50BT  •  16K BPE tokenizer  •  A100        ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  MODEL ARCHITECTURE  (~306M parameters)
+# ─────────────────────────────────────────────────────────────────────────────
+#
+#  Dense transformer — every layer has its own weights (no MobileLLM sharing).
+#  SOTA features:  SwiGLU, GQA, QK-Norm, RoPE, RMSNorm, tied embeddings.
+#
+model:
+  d_model: 1024              # Residual stream / embedding width.
+  n_heads: 16                # Query heads in grouped-query attention.
+  n_kv_heads: 4              # KV heads for GQA.  Each KV head serves 4 query heads.
+  head_dim: 64               # Per-head dimension.  16 × 64 = 1024-dim Q space.
+  ffn_dim: 3072              # SwiGLU hidden dim.  3× d_model — sweet spot for this scale.
+  n_layers: 24               # All unique transformer blocks (no weight sharing).
+  max_seq_len: 2048          # 2048-token context — covers most FineWeb-Edu documents.
+  dropout: 0.0               # No dropout — 10B tokens is plenty for 306M params.
+  rope_theta: 10000.0        # Standard RoPE base frequency.
+  norm_eps: 1.0e-6           # RMSNorm epsilon for numerical stability.
+  tie_embeddings: true        # Share input/output embeddings — saves ~16M params.
+  qk_norm: true               # RMSNorm on Q and K — stabilises attention at scale.
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  TRAINING HYPERPARAMETERS
+# ─────────────────────────────────────────────────────────────────────────────
+training:
+  batch_size: 24              # Per-device micro-batch (sequences).
+  grad_accum_steps: 8         # Effective batch = 24 x 8 x 2048 = 393,216 tokens/step.
+  learning_rate: 3.0e-4       # Peak LR - same as 10BT run, model size unchanged.
+  min_lr: 3.0e-5              # Floor LR (10% of peak). Reached only during decay phase.
+  weight_decay: 0.1           # AdamW L2 penalty on non-embedding, non-norm params.
+  beta1: 0.9                  # AdamW momentum coefficient.
+  beta2: 0.95                 # AdamW second-moment coefficient (LLM standard).
+  warmup_steps: 4000          # Linear warmup. ~3% of ~127k total steps.
+  decay_fraction: 0.10        # WSD: cosine decay over the last 10% of steps (~12.7k).
+                              # Stable phase holds peak LR for the middle ~87% of steps.
+  max_grad_norm: 1.0          # Gradient clipping threshold.
+  num_epochs: 1               # Single pass over 50B tokens. ~164x Chinchilla-optimal.
+  seed: 42                    # Random seed for reproducibility.
+  dtype: "bfloat16"           # bf16 on A100 for maximum throughput.
+  compile: true               # torch.compile for 15-25% speedup on A100.
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  EVALUATION & LOGGING
+# ─────────────────────────────────────────────────────────────────────────────
+eval:
+  interval: 500              # Evaluate every N optimiser steps.
+  log_interval: 5            # Log train metrics to W&B every N steps.
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  DATA
+# ─────────────────────────────────────────────────────────────────────────────
+data:
+  dataset: "HuggingFaceFW/fineweb-edu"        # FineWeb-Edu — curated educational content.
+  subset: "sample-100BT"                       # 100BT superset — training draws ~50BT from this.
+  has_val_split: false                         # No val split; carve from train.
+  val_samples: 4000                            # Docs held out for validation.
+  num_workers: 0                               # DataLoader workers.
+  est_num_rows: 48650000                       # ~5x the 10BT row count for 50BT of content.
+  est_avg_tokens: 1050                         # Same tokenizer, same avg tokens/doc.
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  WEIGHTS & BIASES
+# ─────────────────────────────────────────────────────────────────────────────
+wandb:
+  project: "Helios Nova 50BT Pre-Train"                  # W&B project name.
+  entity: null                                 # W&B username or team.  null = personal default.
+  run_name: null                               # Custom run name.  null = W&B auto-generates one.
+  token: " "
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  HUGGINGFACE HUB
+# ─────────────────────────────────────────────────────────────────────────────
+hub:
+  repo_id: "user/repo_name"         # HF repo for tokenizer + model checkpoints.
+  token: " "   # HF write-access token.
