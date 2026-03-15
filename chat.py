@@ -144,9 +144,9 @@ def main():
     parser = argparse.ArgumentParser(description="Helios Nova interactive completion")
     parser.add_argument("--repo", type=str, default=DEFAULT_REPO,
                         help="HuggingFace repo ID (default: %(default)s)")
-    parser.add_argument("--max-tokens", "-m", type=int, default=2048,
+    parser.add_argument("--max-tokens", "-m", type=int, default=256,
                         help="Maximum tokens to generate per prompt")
-    parser.add_argument("--temperature", "-t", type=float, default=0.8,
+    parser.add_argument("--temperature", "-t", type=float, default=0.5,
                         help="Sampling temperature (lower = more deterministic)")
     parser.add_argument("--top-k", "-k", type=int, default=50,
                         help="Top-k sampling (0 = disabled)")
