@@ -7,12 +7,6 @@
 torch>=2.3.0                        # bf16 AMP, torch.compile, fused AdamW
 torchvision                         # pulled in by torch; keeps versions aligned
 
-# ── Flash Attention 2 ────────────────────────────────────────────────────────
-# Requires CUDA 11.8+ and a pre-built torch.  Build from source; takes ~10 min.
-# If pre-built wheels are available for your CUDA/torch combo you can also do:
-#   pip install flash-attn --no-build-isolation
-flash-attn>=2.5.0
-
 # ── HuggingFace stack ─────────────────────────────────────────────────────────
 transformers>=4.40.0                # AutoTokenizer, model utilities
 datasets>=2.19.0                    # FineWeb-Edu streaming
