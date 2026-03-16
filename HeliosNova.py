@@ -2,7 +2,7 @@
 Helios Nova  —  A 306M-parameter dense language model
 ======================================================
 Successor to Helios-Tiny.  Designed for maximum coherence at small scale,
-trained on FineWeb-Edu 10BT with a 16K BPE tokenizer.
+trained on FineWeb-Edu 100BT with a 16K BPE tokenizer.
 
 Architecture
 ------------
@@ -49,7 +49,7 @@ import torch.nn.functional as F
 class HeliosNovaConfig:
     """All architectural hyper-parameters for Helios Nova."""
 
-    vocab_size:      int   = 16384       # BPE vocabulary (power of 2 for GPU efficiency)
+    vocab_size:      int   = 16000       # BPE vocabulary
     d_model:         int   = 1024        # residual stream / embedding width
     n_heads:         int   = 16          # query heads in grouped-query attention
     n_kv_heads:      int   = 4           # key-value heads (GQA ratio = n_heads / n_kv_heads)
