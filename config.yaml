@@ -1,13 +1,13 @@
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  Helios Nova  ·  Configuration                                             ║
-# ║  306M dense LM  •  FineWeb-Edu 50BT  •  16K BPE tokenizer  •  A100        ║
+# ║  306M dense LM  •  FineWeb-Edu 50BT  •  16K BPE tokenizer  •  H100        ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  MODEL ARCHITECTURE  (~306M parameters)
 # ─────────────────────────────────────────────────────────────────────────────
 #
-#  Dense transformer — every layer has its own weights (no MobileLLM sharing).
+#  Dense transformer — every layer has its own weights.
 #  SOTA features:  SwiGLU, GQA, QK-Norm, RoPE, RMSNorm, tied embeddings.
 #
 model:
@@ -18,7 +18,7 @@ model:
   ffn_dim: 3072              # SwiGLU hidden dim.  3× d_model — sweet spot for this scale.
   n_layers: 24               # All unique transformer blocks (no weight sharing).
   max_seq_len: 2048          # 2048-token context — covers most FineWeb-Edu documents.
-  dropout: 0.0               # No dropout — 10B tokens is plenty for 306M params.
+  dropout: 0.0               # No dropout — 50B tokens is plenty for 306M params.
   rope_theta: 10000.0        # Standard RoPE base frequency.
   norm_eps: 1.0e-6           # RMSNorm epsilon for numerical stability.
   tie_embeddings: true        # Share input/output embeddings — saves ~16M params.
