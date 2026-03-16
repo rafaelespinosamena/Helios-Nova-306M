@@ -15,7 +15,7 @@ Key features
   training, then cosine-decays only in the final `decay_fraction` of steps.
   Outperforms cosine on long overtraining runs (MiniCPM, FineWeb ablations).
 • torch.compile on CUDA for 10-30 % wall-time speedup.
-• Mixed-precision bf16 on A100 via PyTorch AMP.
+• Mixed-precision bf16 on H100 via PyTorch.
 
 Usage
 -----
