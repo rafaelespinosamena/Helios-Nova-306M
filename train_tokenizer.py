@@ -1,9 +1,6 @@
 """
 BPE Tokenizer Trainer — 16k vocab, FineWeb Edu 10BT, ~300k docs
-Pushes to respinosamena/Helios-MoE as a public HuggingFace repo.
-
-Requirements:
-    pip install tokenizers datasets huggingface_hub transformers
+Pushes to respinosamena/Helios-Nova-306M as a public HuggingFace repo.
 
 Usage:
     huggingface-cli login        # once, to authenticate
@@ -28,12 +25,10 @@ from tokenizers.models import BPE
 from transformers import PreTrainedTokenizerFast
 from huggingface_hub import HfApi
 
-os.environ['HF_TOKEN'] = "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"
-
 # ──────────────────────────────────────────────────────────────
 # Config
 # ──────────────────────────────────────────────────────────────
-REPO_ID       = "respinosamena/Helios-Nova"
+REPO_ID       = "respinosamena/Helios-Nova-306M"
 VOCAB_SIZE    = 16_000
 NUM_DOCS      = 1_000_000
 BATCH_SIZE    = 1_000        # docs fed to trainer at a time
